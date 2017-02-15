@@ -83,7 +83,15 @@ for i in range(200):
 plt.plot(x, y, '-*')
 plt.title('Linear fit w/ estimated noise')
 plt.show()
+#%%
+a = fit.extract()['a']
+b = fit.extract()['b']
+sigma = fit.extract()['sigma']
 
+df = pandas.DataFrame({ 'a' : a, 'b' : b, 'sigma' : sigma })
+
+seaborn.pairplot(df)
+plt.show()
 #%%
 
 import pystan
@@ -105,7 +113,6 @@ model {
         y[i] ~ normal(a * y[i - 1] + a * y[i - 2], sigma);
 }
 
-// We can generated samples directly in Stan
 generated quantities {
     vector[N] yhat;
 
@@ -132,9 +139,8 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.05)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.05)
+plt.plot(x[2:], y[2:])
 plt.show()
 
 #%%
@@ -185,9 +191,8 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
 #%%
 a = fit.extract()['a']
@@ -249,11 +254,18 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
 #%%
+a = fit.extract()['a']
+b = fit.extract()['b']
+sigma = fit.extract()['sigma']
+
+df = pandas.DataFrame({ 'a' : a, 'b' : b, 'sigma' : sigma })
+
+seaborn.pairplot(df)
+plt.show()
 #%%
 
 import pystan
@@ -301,9 +313,8 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
 
 #%%
@@ -325,10 +336,10 @@ parameters {
 
 model {
     for (i in 1:N)
-        log(y[i]) ~ normal(a * x[i] + b, sigma);
+        if (y[i] > 0.0)
+            log(y[i]) ~ normal(a * x[i] + b, sigma);
 }
 
-// We can generated samples directly in Stan
 generated quantities {
     vector[N] yhat;
 
@@ -352,9 +363,8 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
 
 #%%
@@ -382,7 +392,6 @@ model {
         y[i] ~ normal(exp(a * x[i] + b), sigma);
 }
 
-// We can generated samples directly in Stan
 generated quantities {
     vector[N] yhat;
 
@@ -406,9 +415,8 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, 2:], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
 #%%
 
@@ -485,7 +493,6 @@ model {
         y[i] ~ normal((pow(a, x[i]) - pow(-a, -x[i])) / (2 * a - 1), sigma);
 }
 
-// We can generated samples directly in Stan
 generated quantities {
     vector[N] yhat;
 
@@ -509,7 +516,6 @@ print fit
 yhat = fit.extract()['yhat']
 
 for i in range(200):
-    plt.plot(x, yhat[-i], 'r', alpha = 0.1)
-plt.plot(x, y)
-plt.title('Linear fit w/ noise')
+    plt.plot(x[2:], yhat[-i, :2], 'r', alpha = 0.1)
+plt.plot(x[2:], y[2:])
 plt.show()
